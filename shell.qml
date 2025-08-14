@@ -4,5 +4,5 @@ import "bar"
 
 ShellRoot {
     Bar {}
-    Sidebar {}
+    // Sidebar {}
 }

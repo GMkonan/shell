@@ -133,6 +133,7 @@ Scope {
                     Blocks.Date {}
                     Blocks.Time {}
                     Blocks.StatusIcons {}
+                    Sidebar {}
                 }
             }
         }
