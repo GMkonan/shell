@@ -6,6 +6,7 @@ import QtQuick.Layouts
 import "blocks" as Blocks
 import "utils" as Utils
 import "root:/"
+import Quickshell.Services.Mpris
 
 Scope {
     IpcHandler {
@@ -70,30 +71,15 @@ Scope {
                     Blocks.Workspaces {}
                 }
 
-                // Blocks.ActiveWorkspace {
-                //     id: activeWorkspace
-                //     Layout.leftMargin: 10
-                //     anchors.centerIn: undefined
-                //
-                //     chopLength: {
-                //         var space = Math.floor(bar.width - (rightBlocks.implicitWidth + leftBlocks.implicitWidth));
-                //         return space * 0.08;
-                //     }
-                //
-                //     text: {
-                //         var str = activeWindowTitle;
-                //         return str.length > chopLength ? str.slice(0, chopLength) + '...' : str;
-                //     }
-                //
-                //     color: {
-                //         return Hyprland.focusedMonitor == Hyprland.monitorFor(screen) ? "#FFFFFF" : "#CCCCCC";
-                //     }
-                // }
-
                 // Without this filler item, the active window block will be centered
                 // despite setting left alignment
-                Item {
+                // Center Items
+                RowLayout {
+
+                    Layout.alignment: Qt.AlignCenter
                     Layout.fillWidth: true
+
+                    Blocks.Date {}
                 }
 
                 // Right side
@@ -106,34 +92,28 @@ Scope {
                     Layout.alignment: Qt.AlignRight
                     Layout.fillWidth: true
 
-                    // Rectangle {
-                    //
-                    //     anchors.fill: parent
-                    //     color: "#fff"
-                    //
-                    //     MouseArea {
-                    //         anchors.fill: parent
-                    //         onClicked: GlobalStates.sidebarRightOpen = true
-                    //     }
-                    // }
-
-                    // Blocks.Test {}
-                    Blocks.SystemTray2 {}
                     Text {
 
                         Layout.rightMargin: 3
                         text: Utils.KeyboardLayoutService.currentLayout
-                        font.pixelSize: 12
+                        font.pixelSize: 16
                         color: "#fff"
                     }
-                    // Blocks.SystemTray {}
-                    // Blocks.Memory {}
+
+                    Text {
+
+                        Layout.rightMargin: 3
+                        text: MprisPlayer.trackTitle
+                        font.pixelSize: 16
+                        color: "#fff"
+                    }
+                    Blocks.Memory {}
                     // Blocks.Sound {}
                     Blocks.Battery {}
-                    Blocks.Date {}
-                    Blocks.Time {}
                     Blocks.StatusIcons {}
-                    Sidebar {}
+                    Blocks.Time {}
+                    // Will deal with sidebar later
+                    // Sidebar {}
                 }
             }
         }

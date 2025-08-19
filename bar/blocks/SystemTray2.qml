@@ -11,19 +11,12 @@ RowLayout {
 
     Repeater {
         model: SystemTray.items
-        // ScriptModel {
-        //     values: {
-        //         [...SystemTray.items.values].filter(item => {
-        //             return (item.id != "spotify" && item.id != "chrome_status_icon_1");
-        //         });
-        //     }
 
         MouseArea {
             id: delegate
             required property SystemTrayItem modelData
             property alias item: delegate.modelData
 
-            Layout.fillHeight: true
             implicitWidth: icon.implicitWidth + 5
 
             acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton

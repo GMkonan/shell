@@ -1,15 +1,18 @@
+import Quickshell
+import Quickshell.Io
+import Quickshell.Hyprland
+import Quickshell.Wayland
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
-import Quickshell
-import Quickshell.Io
-import Quickshell.Widgets
+import "blocks" as Blocks
+import "utils" as Utils
 import "../"
 import "root:/"
 
 BarBlock {
     id: root
-    Layout.preferredWidth: 20
+    Layout.preferredWidth: 30
 
     content: BarText {
         text: ""
@@ -17,46 +20,17 @@ BarBlock {
         color: Theme.get.iconColor
     }
 
-    color: "transparent"
-
-    Process {
-        id: appListProc
-        command: ["sh", "-c", "for dir in ~/.nix-profile/share/applications ~/.local/share/applications /run/current-system/sw/share/applications /etc/profiles/per-user/$USER/share/applications; do [ -d \"$dir\" ] && find \"$dir\" -maxdepth 1 -name '*.desktop' -type f; done 2>/dev/null | while read f; do if ! grep -qi 'terminal=true' \"$f\" 2>/dev/null; then name=$(grep -i '^Name=' \"$f\" 2>/dev/null | head -n1 | cut -d= -f2); [ -n \"$name\" ] && basename=$(basename \"$f\" .desktop) && echo \"$name|$basename|$f\"; fi; done"]
-        running: false
-        stdout: SplitParser {
-            onRead: data => {
-                const [appName, launchName, desktopFile] = data.trim().split("|");
-                if (appName && launchName && desktopFile) {
-                    appListModel.append({
-                        name: appName,
-                        launchName: launchName,
-                        path: desktopFile
-                    });
-                }
-            }
-        }
-    }
-
-    Process {
-        id: appLauncher
-        running: false
-        command: ["gtk-launch"]
-    }
-
-    ListModel {
-        id: appListModel
-    }
-
     PopupWindow {
-        id: menuWindow
-        width: 300
-        height: 400
+        id: sidebarWindow
+        width: 350
+        height: 300
         visible: false
+        color: "transparent"
 
         anchor {
-            window: root.QsWindow?.window
-            edges: Edges.Bottom
-            gravity: Edges.Top
+            item: root
+            gravity: Edges.Bottom
+            rect.y: parentWindow.height + 5
         }
 
         FocusScope {
@@ -76,73 +50,113 @@ BarBlock {
                 Timer {
                     id: closeTimer
                     interval: 500
-                    onTriggered: menuWindow.visible = false
+                    onTriggered: sidebarWindow.visible = false
                 }
-
                 Rectangle {
                     anchors.fill: parent
-                    color: "#2E3440"  // Using Nord theme color
-                    border.color: "#4C566A"
-                    border.width: 1
-                    radius: 4
+                    radius: 5
+                    color: Theme.get.bg
 
                     ColumnLayout {
                         anchors.fill: parent
                         anchors.margins: 10
-                        spacing: 5
+                        spacing: 0
 
-                        ListView {
-                            id: appListView
-                            Layout.fillWidth: true
-                            Layout.fillHeight: true
-                            clip: true
-                            model: appListModel
-                            delegate: Rectangle {
-                                width: parent.width
-                                height: 35
-                                color: mouseArea.containsMouse ? "#4C566A" : "transparent"
-                                radius: 4
+                        RowLayout {
+                            Layout.alignment: Qt.AlignTop | Qt.AlignLeft
+                            spacing: 3
 
-                                Text {
+                            Rectangle {
+                                width: 80
+                                height: 80
+                                radius: width / 2
+                                clip: true
+                                color: "transparent"
+
+                                // Image {
+                                //     anchors.fill: parent
+                                //     source: "path/to/your/image.png"
+                                //     fillMode: Image.PreserveAspectCrop
+                                // }
+                            }
+                        }
+
+                        // TOP ROW - Buttons
+                        RowLayout {
+                            Layout.alignment: Qt.AlignTop | Qt.AlignRight
+                            spacing: 3
+
+                            RoundButton {
+                                id: powerButton
+                                text: "⏻"
+                                implicitWidth: 32
+                                implicitHeight: 32
+                                background: Rectangle {
                                     anchors.fill: parent
-                                    anchors.leftMargin: 10
-                                    text: model.name
+                                    radius: parent.width / 2
+                                    color: powerButton.hovered ? Theme.get.buttonBackgroundColor : "transparent"
+                                }
+                                font.pixelSize: 24
+                                font.bold: true
+                                contentItem: Text {
+                                    text: powerButton.text
+                                    font: powerButton.font
                                     color: "white"
-                                    font.pixelSize: 12
+                                    horizontalAlignment: Text.AlignHCenter
                                     verticalAlignment: Text.AlignVCenter
                                 }
-
-                                MouseArea {
-                                    id: mouseArea
-                                    anchors.fill: parent
-                                    hoverEnabled: true
-                                    onClicked: {
-                                        console.log("Launching:", model.launchName, "from", model.path);
-                                        appLauncher.command = ["gtk-launch", model.launchName];
-                                        appLauncher.running = true;
-                                        menuWindow.visible = false;
-                                    }
+                                ToolTip.visible: hovered
+                                ToolTip.text: "Power Off"
+                                ToolTip.delay: 500
+                                onClicked: {
+                                    Quickshell.execDetached(["bash", "-c", `systemctl poweroff || loginctl poweroff`]);
                                 }
                             }
+
+                            RoundButton {
+                                id: rebootButton
+                                text: "↻"
+                                implicitWidth: 32
+                                implicitHeight: 32
+                                background: Rectangle {
+                                    anchors.fill: parent
+                                    radius: parent.width / 2
+                                    color: rebootButton.hovered ? Theme.get.buttonBackgroundColor : "transparent"
+                                }
+                                font.pixelSize: 24
+                                font.bold: true
+                                contentItem: Text {
+                                    text: rebootButton.text
+                                    font: rebootButton.font
+                                    color: "white"
+                                    horizontalAlignment: Text.AlignHCenter
+                                    verticalAlignment: Text.AlignVCenter
+                                }
+                                ToolTip.visible: hovered
+                                ToolTip.text: "Reboot"
+                                ToolTip.delay: 500
+                                onClicked: {
+                                    Quickshell.execDetached(["bash", "-c", `reboot || loginctl reboot`]);
+                                }
+                            }
+                        }
+
+                        // Spacer to push SystemTray2 to bottom
+                        Item {
+                            Layout.fillHeight: true
+                        }
+
+                        // BOTTOM ROW - SystemTray2
+                        RowLayout {
+                            Layout.alignment: Qt.AlignHCenter | Qt.AlignBottom
+                            SystemTray2 {}
                         }
                     }
                 }
             }
         }
     }
-
-    function filterApps() {
-        const searchText = searchField.text.toLowerCase();
-        for (let i = 0; i < appListModel.count; i++) {
-            const item = appListModel.get(i);
-            item.visible = item.name.toLowerCase().includes(searchText);
-        }
-    }
     onClicked: function () {
-        if (!menuWindow.visible) {
-            appListModel.clear();
-            appListProc.running = true;
-        }
-        menuWindow.visible = !menuWindow.visible;
+        sidebarWindow.visible = !sidebarWindow.visible;
     }
 }
