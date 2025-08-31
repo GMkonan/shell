@@ -53,47 +53,38 @@ Scope {
                 right: true
             }
 
-            RowLayout {
-                id: allBlocks
-                spacing: 0
+            Item {
                 anchors.fill: parent
 
-                // Left side
+                // Left section - anchored to left
                 RowLayout {
                     id: leftBlocks
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.leftMargin: 10
                     spacing: 10
-                    Layout.alignment: Qt.AlignLeft
-
-                    Layout.leftMargin: 10
-                    Layout.fillWidth: true
 
                     Blocks.Icon {}
+                }
+
+                // Center section - absolutely centered
+                RowLayout {
+                    id: centerBlocks
+                    anchors.centerIn: parent
+                    spacing: 0
+
                     Blocks.Workspaces {}
                 }
 
-                // Without this filler item, the active window block will be centered
-                // despite setting left alignment
-                // Center Items
-                RowLayout {
-
-                    Layout.alignment: Qt.AlignCenter
-                    Layout.fillWidth: true
-
-                    Blocks.Date {}
-                }
-
-                // Right side
+                // Right section - anchored to right
                 RowLayout {
                     id: rightBlocks
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.rightMargin: 10
                     spacing: 0
 
-                    Layout.rightMargin: 10
-
-                    Layout.alignment: Qt.AlignRight
-                    Layout.fillWidth: true
-
                     Text {
-
                         Layout.rightMargin: 3
                         text: Utils.KeyboardLayoutService.currentLayout
                         font.pixelSize: 16
@@ -101,16 +92,19 @@ Scope {
                     }
 
                     Text {
-
                         Layout.rightMargin: 3
                         text: MprisPlayer.trackTitle
                         font.pixelSize: 16
                         color: "#fff"
                     }
-                    Blocks.Memory {}
+                    // Blocks.Memory {}
                     // Blocks.Sound {}
-                    Blocks.Battery {}
-                    Blocks.StatusIcons {}
+                    // Blocks.Bluetooth {}
+                    // Blocks.Battery {}
+                    Blocks.StatusGroup {}
+                    // Blocks.StatusIcons {}
+
+                    // Blocks.Date {}
                     Blocks.Time {}
                     // Will deal with sidebar later
                     // Sidebar {}
