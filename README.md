@@ -1,14 +1,18 @@
 Based initially on Titus quickshell config!
 
 All this code will probably go to my flake when I feel comfortable with it
-Todo
 
 ## Running
 As long as you have quickshell installed just run qs. Quickshell auto-reload on changes making it pretty easy to develop.
 
 ## Todo
-- [ ] Add audio/music thing to bar
+- [ ] Integrate LSP correctly... it will help for sure
 - [ ] Update to quickshell v0.2.0 https://quickshell.org/changelog/
+- [ ] Add audio/music thing to bar
+- [ ] Addapt Bar to Niri
+- [ ] Make lockscreen ()
+- [ ] Fix volume mixer
+- [ ] Add mullvad vpn module
 
 ### Refs
 - https://quickshell.outfoxxed.me/docs/about/
