@@ -73,7 +73,8 @@ Scope {
                     anchors.centerIn: parent
                     spacing: 0
 
-                    Blocks.Workspaces {}
+                    // Blocks.Workspaces {}
+                    Workspace {}
                 }
 
                 // Right section - anchored to right
